@@ -24,7 +24,7 @@ vector<vector<Pixel>> read_image(string filename){
     
     fstream stream;
     string fullPath = "../" + filename;
-    stream.open(fullPath, ios::in | ios::binary);
+    stream.open(fullPath, ios::in | ios::binary); // ios::in - režim čítania(input mode)
 
     if (!stream.is_open()) {
         cout << "Error: neda sa otvorit'" << filename << "'" << endl;
@@ -32,18 +32,19 @@ vector<vector<Pixel>> read_image(string filename){
     }
 
     int file_size = get_int(stream, 2, 4);
+    //cout << "file_size: " << file_size << endl;
     int start = get_int(stream, 10, 4);
     int width = get_int(stream, 18, 4);
     int height = get_int(stream, 22, 4);
     int bits_per_pixel = get_int(stream, 28, 2);
 
-   int scanline_size = width * (bits_per_pixel / 8);
+   int bytes_per_row = width * (bits_per_pixel / 8);  // bez paddingu
     int padding = 0;
-    if (scanline_size % 4 != 0){
-        padding = 4 - scanline_size % 4;
+    if (bytes_per_row % 4 != 0){
+        padding = 4 - bytes_per_row % 4;
     }
 
-    if (file_size != start + (scanline_size + padding) * height){
+    if (file_size != start + (bytes_per_row + padding) * height){
         return {};
     }
 
